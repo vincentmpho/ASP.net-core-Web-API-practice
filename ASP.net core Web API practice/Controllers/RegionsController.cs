@@ -119,13 +119,13 @@ namespace Walk_and_Trails_of_SA_API.Controllers
             databaseContext.SaveChanges(regionDomail);
 
             //convert domain model to DTO
-            var regionDto = new RegionDto
+            var  regionDto = new RegionDto
             {
-                Id = regionDomail.Id,
-                Code = regionDomail.Code,
-                Name = regionDomail.Name,
-                RegionImageUrl = regionDomail.RegionImageUrl
-            };
+                Id=regionDomail.Id,
+                Code=regionDomail.Code,
+                Name=regionDomail.Name,
+                RegionImageUrl=regionDomail.RegionImageUrl
+            }
 
 
             return StatusCode(StatusCodes.Status200OK);
