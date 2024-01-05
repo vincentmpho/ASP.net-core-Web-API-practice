@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Walk_and_Trails_of_SA_API.Data;
+using Walk_and_Trails_of_SA_API.Models.Domain;
 using Walk_and_Trails_of_SA_API.Models.DTO;
 
 namespace Walk_and_Trails_of_SA_API.Controllers
@@ -40,12 +41,9 @@ namespace Walk_and_Trails_of_SA_API.Controllers
 
         [HttpGet]
         [Route("{id:Guid}")]
-
         public IActionResult GetById([FromRoute] Guid id)
         {
-            //var regionsDomain = databaseContext.Regions.Find(id);
-            //GET Region Domain model from daatabase
-            
+            // Get Region Domain model from the database
             var regionDomain = databaseContext.Regions.FirstOrDefault(x => x.Id == id);
 
             if (regionDomain == null)
@@ -53,20 +51,85 @@ namespace Walk_and_Trails_of_SA_API.Controllers
                 return NotFound();
             }
 
-            //Conert Region domain  to region DTO
-
-            regionDto.Add(new RegionDto()
+            // Convert Region domain to a single RegionDto object
+            var regionDto = new RegionDto()
             {
                 Id = regionDomain.Id,
                 Name = regionDomain.Name,
                 Code = regionDomain.Code,
                 RegionImageUrl = regionDomain.RegionImageUrl
-            });
+            };
 
-
-            //return DTO back to client
+            // Return DTO back to the client
             return StatusCode(StatusCodes.Status200OK, regionDto);
+        }
+
+        //POST to create new Region
+        [HttpPost]
+        public IActionResult  Create ([FromBody] AddRegionRequestDto addRegionRequestDto)
+        {
+            //Convert DTO TO Domain Model
+            var regionDomain = new Region
+            {
+                Code = addRegionRequestDto.Code,
+                Name = addRegionRequestDto.Name,
+                RegionImageUrl = addRegionRequestDto.RegionImageUrl
+            };
+
+            //Use Domain Model to create Region
+            databaseContext.Regions.Add(regionDomain);
+            databaseContext.SaveChanges();
+
+
+            //return CreatedAtAction(nameof(GetById), new {id=regionDomain.Id}, regionDomain);
+
+            //Map Domain model back to DTO
+
+            var regionDto = new RegionDto
+            {
+                Id = regionDomain.Id,
+                Code = regionDomain.Code,
+                Name = regionDomain.Name,
+                RegionImageUrl = regionDomain.RegionImageUrl
+            };
+
+            return StatusCode(StatusCodes.Status201Created, regionDomain);
 
         }
+
+        //Update Region
+        [HttpPut]
+        [Route("{id.Guid}")]
+        public IActionResult Update ([FromRoute] Guid guid,[FromBody] UpdateRegionRequestDto updateRegionRequestDto )
+        {
+            //check if Region Exists
+            var regionDomail = databaseContext.Regions.FirstOrDefault(x => x.Id == id);
+
+            if (regionDomail == null)
+            {
+                return NotFound();
+            }
+
+            //Map DTO to Domain model
+
+            regionDomail.Code = updateRegionRequestDto.Code;
+            regionDomail.Name = updateRegionRequestDto.Name;
+           regionDomail.RegionImageUrl = updateRegionRequestDto.RegionImageUrl;
+
+            databaseContext.SaveChanges(regionDomail);
+
+            //convert domain model to DTO
+            var  regionDto = new RegionDto
+            {
+                Id=regionDomail.Id,
+                Code=regionDomail.Code,
+                Name=regionDomail.Name,
+                RegionImageUrl=regionDomail.RegionImageUrl
+            }
+
+
+            return StatusCode(StatusCodes.Status200OK);
+        }
+
     }
 }
