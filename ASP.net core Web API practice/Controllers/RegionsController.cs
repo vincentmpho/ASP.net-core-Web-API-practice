@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Walk_and_Trails_of_SA_API.Data;
 using Walk_and_Trails_of_SA_API.Models.Domain;
 using Walk_and_Trails_of_SA_API.Models.DTO;
@@ -10,17 +11,17 @@ namespace Walk_and_Trails_of_SA_API.Controllers
     [ApiController]
     public class RegionsController : ControllerBase
     {
-        private readonly DatabaseContext databaseContext;
+        private readonly DatabaseContext databaseContext; 
         public RegionsController(DatabaseContext databaseContext)
         {
            this.databaseContext = databaseContext;
         }
 
         [HttpGet]
-        public IActionResult GetAll() 
+        public async Task<IActionResult> GetAll() 
         { 
             //Get Data from database-Domain models
-            var regionsDomain  = databaseContext.Regions.ToList();
+            var regionsDomain  =  await databaseContext.Regions.ToListAsync();
 
             //Map Domain models to DTOs
             var regionDto = new List<RegionDto>();
@@ -41,10 +42,10 @@ namespace Walk_and_Trails_of_SA_API.Controllers
 
         [HttpGet]
         [Route("{id:Guid}")]
-        public IActionResult GetById([FromRoute] Guid id)
+        public async Task <IActionResult> GetById([FromRoute] Guid id)
         {
             // Get Region Domain model from the database
-            var regionDomain = databaseContext.Regions.FirstOrDefault(x => x.Id == id);
+            var regionDomain =await  databaseContext.Regions.FirstOrDefaultAsync(x => x.Id == id);
 
             if (regionDomain == null)
             {
@@ -66,7 +67,7 @@ namespace Walk_and_Trails_of_SA_API.Controllers
 
         //POST to create new Region
         [HttpPost]
-        public IActionResult  Create ([FromBody] AddRegionRequestDto addRegionRequestDto)
+        public async Task <IActionResult>  Create ([FromBody] AddRegionRequestDto addRegionRequestDto)
         {
             //Convert DTO TO Domain Model
             var regionDomain = new Region
@@ -77,8 +78,8 @@ namespace Walk_and_Trails_of_SA_API.Controllers
             };
 
             //Use Domain Model to create Region
-            databaseContext.Regions.Add(regionDomain);
-            databaseContext.SaveChanges();
+            await databaseContext.Regions.AddAsync(regionDomain);
+            await databaseContext.SaveChangesAsync();
 
 
             //return CreatedAtAction(nameof(GetById), new {id=regionDomain.Id}, regionDomain);
@@ -100,10 +101,10 @@ namespace Walk_and_Trails_of_SA_API.Controllers
         // Update Region
         [HttpPut]
         [Route("{id}")]
-        public IActionResult Update([FromRoute] Guid id, [FromBody] UpdateRegionRequestDto updateRegionRequestDto)
+        public async Task <IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateRegionRequestDto updateRegionRequestDto)
         {
             //check if Region Exists
-            var regionDomain = databaseContext.Regions.FirstOrDefault(x =>  x.Id== id);
+            var regionDomain = await databaseContext.Regions.FirstOrDefaultAsync(x =>  x.Id== id);
 
             if (regionDomain == null)
             {
@@ -116,7 +117,7 @@ namespace Walk_and_Trails_of_SA_API.Controllers
             regionDomain.Name = updateRegionRequestDto.Name;
            regionDomain.RegionImageUrl = updateRegionRequestDto.RegionImageUrl;
 
-            databaseContext.SaveChanges();
+             await databaseContext.SaveChangesAsync();
 
             //convert domain model to DTO
             var regionDto = new RegionDto
@@ -134,9 +135,9 @@ namespace Walk_and_Trails_of_SA_API.Controllers
         // Delete Region
         [HttpDelete]
         [Route("{id}")]
-        public IActionResult Delete([FromRoute] Guid id)
+        public async Task <IActionResult> Delete([FromRoute] Guid id)
         {
-            var regionDomain = databaseContext.Regions.FirstOrDefault(x => x.Id == id);
+            var regionDomain = await databaseContext.Regions.FirstOrDefaultAsync(x => x.Id == id);
 
             if (regionDomain == null)
             {
@@ -144,8 +145,8 @@ namespace Walk_and_Trails_of_SA_API.Controllers
             }
 
             //Dlt Region
-            databaseContext.Regions.Remove(regionDomain);
-            databaseContext.SaveChanges();
+             databaseContext.Regions.Remove(regionDomain);
+            await databaseContext.SaveChangesAsync();
 
             //Return Deleted  Region back
             //Map  Domain Model to Dto
