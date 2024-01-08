@@ -97,38 +97,68 @@ namespace Walk_and_Trails_of_SA_API.Controllers
 
         }
 
-        //Update Region
+        // Update Region
         [HttpPut]
-        [Route("{id.Guid}")]
-        public IActionResult Update ([FromRoute] Guid guid,[FromBody] UpdateRegionRequestDto updateRegionRequestDto )
+        [Route("{id}")]
+        public IActionResult Update([FromRoute] Guid id, [FromBody] UpdateRegionRequestDto updateRegionRequestDto)
         {
             //check if Region Exists
-            var regionDomail = databaseContext.Regions.FirstOrDefault(x => x.Id == id);
+            var regionDomain = databaseContext.Regions.FirstOrDefault(x =>  x.Id== id);
 
-            if (regionDomail == null)
+            if (regionDomain == null)
             {
                 return NotFound();
             }
 
             //Map DTO to Domain model
 
-            regionDomail.Code = updateRegionRequestDto.Code;
-            regionDomail.Name = updateRegionRequestDto.Name;
-           regionDomail.RegionImageUrl = updateRegionRequestDto.RegionImageUrl;
+            regionDomain.Code = updateRegionRequestDto.Code;
+            regionDomain.Name = updateRegionRequestDto.Name;
+           regionDomain.RegionImageUrl = updateRegionRequestDto.RegionImageUrl;
 
-            databaseContext.SaveChanges(regionDomail);
+            databaseContext.SaveChanges();
 
             //convert domain model to DTO
-            var  regionDto = new RegionDto
+            var regionDto = new RegionDto
             {
-                Id=regionDomail.Id,
-                Code=regionDomail.Code,
-                Name=regionDomail.Name,
-                RegionImageUrl=regionDomail.RegionImageUrl
+                Id = regionDomain.Id,
+                Code = regionDomain.Code,
+                Name = regionDomain.Name,
+                RegionImageUrl = regionDomain.RegionImageUrl
+            };
+
+
+            return StatusCode(StatusCodes.Status200OK,regionDto);
+        }
+
+        // Delete Region
+        [HttpDelete]
+        [Route("{id}")]
+        public IActionResult Delete([FromRoute] Guid id)
+        {
+            var regionDomain = databaseContext.Regions.FirstOrDefault(x => x.Id == id);
+
+            if (regionDomain == null)
+            {
+                return NotFound();
             }
 
+            //Dlt Region
+            databaseContext.Regions.Remove(regionDomain);
+            databaseContext.SaveChanges();
 
-            return StatusCode(StatusCodes.Status200OK);
+            //Return Deleted  Region back
+            //Map  Domain Model to Dto
+
+            var regionsDto = new RegionDto
+            {
+                Id = regionDomain.Id,
+                Code = regionDomain.Code,
+                Name = regionDomain.Name,
+                RegionImageUrl = regionDomain.RegionImageUrl
+            };
+
+            return StatusCode(StatusCodes.Status200OK, regionsDto);
         }
 
     }
