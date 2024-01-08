@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Walk_and_Trails_of_SA_API.Data;
+using Walk_and_Trails_of_SA_API.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +15,9 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<DatabaseContext>(options =>
 options.UseSqlServer(builder.Configuration.GetConnectionString("SAWalksConnectionString")));
 
+//inject repo
+
+builder.Services.AddScoped<IRegionRepository, SQLRegionRegionRepository>();
 
 var app = builder.Build();
 
