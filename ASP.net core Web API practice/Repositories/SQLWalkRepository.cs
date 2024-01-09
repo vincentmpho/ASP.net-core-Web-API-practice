@@ -21,7 +21,7 @@ namespace Walk_and_Trails_of_SA_API.Repositories
 
         public async Task<List<Walk>> GetALLAsync()
         {
-             return await databaseContext.Walks.ToListAsync();
+             return await databaseContext.Walks.Include("Difficulty").Include("Region").ToListAsync();
 
         }
     }
