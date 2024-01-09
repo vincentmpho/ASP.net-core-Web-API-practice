@@ -37,10 +37,29 @@ namespace Walk_and_Trails_of_SA_API.Controllers
             return StatusCode(StatusCodes.Status200OK, walkDomainModel);
         }
 
+        //GET Walks
+        //GET: Api/walks
 
+        [HttpGet]
+        [Route("{id:Guid}")]
+        public async Task<IActionResult> GetById([FromRoute] Guid id)
+        {
+            //use repo
+            var walkDomainModel = await WalkRepository.GetByIdAsync(id);
 
+            //check
 
+            if (walkDomainModel == null)
+            {
+                return NotFound();
+            }
 
+            //mapp Domain to Dto
+            mapper.Map<WalkDto>(walkDomainModel);
+
+            return StatusCode(StatusCodes.Status200OK, walkDomainModel);
+
+        }
 
         //CRREATE Walk
         //POST: /api/walks
@@ -58,6 +77,59 @@ namespace Walk_and_Trails_of_SA_API.Controllers
 
 
             return StatusCode(StatusCodes.Status200OK, walkDomainModel);
+        }
+
+        //UPDATE Walk By ID
+        //PUT: api/Walk
+
+        [HttpPut]
+        [Route("{id:Guid}")]
+
+        public async Task<IActionResult>Update([FromRoute]Guid id, UpdateWalkRequestDto updateWalkRequestDto)
+        {
+            //Map DTO to Domain Model
+
+            var walkDomainModel = mapper.Map<Walk>(updateWalkRequestDto);
+
+            //use Repo
+
+           walkDomainModel= await WalkRepository.UpdateByIdAsync(id, walkDomainModel);
+
+            //check
+
+            if (walkDomainModel == null)
+            {
+                return NotFound();
+            }
+
+            mapper.Map<WalkDto>(walkDomainModel) ;
+
+            return StatusCode(StatusCodes.Status200OK, walkDomainModel);
+
+        }
+
+        //DELETE a walk By ID
+        //Delete: /api/walk
+
+        [HttpDelete]
+        [Route("{id:Guid}")]
+
+        public async Task<IActionResult> Delete([FromRoute] Guid id)
+        {
+            var DeletedWalkDomainModel =await WalkRepository.DeleteAsync(id);
+
+            //check
+
+            if(DeletedWalkDomainModel == null)
+            {
+                return NotFound();
+            }
+
+            //Map Domain Model TO DTO
+
+            mapper.Map<WalkDto>(DeletedWalkDomainModel) ;
+
+            return StatusCode(StatusCodes.Status200OK,DeletedWalkDomainModel);
         }
     }
 }
