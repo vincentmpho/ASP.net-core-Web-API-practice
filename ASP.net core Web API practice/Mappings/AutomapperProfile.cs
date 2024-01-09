@@ -11,6 +11,8 @@ namespace Walk_and_Trails_of_SA_API.Mappings
             CreateMap<Region, RegionDto>().ReverseMap();
             CreateMap<AddRegionRequestDto, RegionDto>().ReverseMap();
             CreateMap<UpdateRegionRequestDto, RegionDto>().ReverseMap();
+            CreateMap<AddWalkRequestDto, Walk>().ReverseMap();
+            CreateMap<Walk,  WalkDto>().ReverseMap();
 
         }
     }

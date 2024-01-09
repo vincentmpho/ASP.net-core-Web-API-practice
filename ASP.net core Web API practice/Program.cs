@@ -16,12 +16,11 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<DatabaseContext>(options =>
 options.UseSqlServer(builder.Configuration.GetConnectionString("SAWalksConnectionString")));
 
-//inject repo
-
+//inject repositories
 builder.Services.AddScoped<IRegionRepository, SQLRegionRegionRepository>();
+builder.Services.AddScoped<IWalkRepository, SQLWalkRepository>();
 
 //Inject Automapper
-
 builder.Services.AddAutoMapper(typeof(AutomapperProfile));
 
 var app = builder.Build();

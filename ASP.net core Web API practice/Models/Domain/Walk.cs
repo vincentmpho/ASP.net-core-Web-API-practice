@@ -6,6 +6,7 @@
         public string Name { get; set; }
         public string Description  { get; set; }
         public double LengthInkm { get; set; }
+        public string? WalkImaeUrl { get; set; }
         public Guid DifficultyId  { get; set; }
         public Guid  RegionId { get; set; }
 
