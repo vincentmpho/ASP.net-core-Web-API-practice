@@ -6,5 +6,10 @@ namespace Walk_and_Trails_of_SA_API.Repositories
     {
           Task<Walk> CreateAsync(Walk walk);
         Task<List<Walk>> GetALLAsync();
+       Task<Walk?> GetByIdAsync(Guid id);
+
+        Task<Walk?> UpdateByIdAsync(Guid id, Walk walk);
+
+        Task<Walk?> DeleteAsync(Guid id);
     }
 }
