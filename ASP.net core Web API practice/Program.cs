@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Walk_and_Trails_of_SA_API.Data;
+using Walk_and_Trails_of_SA_API.Mappings;
 using Walk_and_Trails_of_SA_API.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,6 +19,10 @@ options.UseSqlServer(builder.Configuration.GetConnectionString("SAWalksConnectio
 //inject repo
 
 builder.Services.AddScoped<IRegionRepository, SQLRegionRegionRepository>();
+
+//Inject Automapper
+
+builder.Services.AddAutoMapper(typeof(AutomapperProfile));
 
 var app = builder.Build();
 

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Walk_and_Trails_of_SA_API.Data;
@@ -13,12 +14,14 @@ namespace Walk_and_Trails_of_SA_API.Controllers
     public class RegionsController : ControllerBase
     {
         private readonly DatabaseContext databaseContext;
-        private readonly IRegionRepository regionRepository; 
+        private readonly IRegionRepository regionRepository;
+        private readonly IMapper mapper;
 
-        public RegionsController(DatabaseContext databaseContext, IRegionRepository regionRepository)
+        public RegionsController(DatabaseContext databaseContext, IRegionRepository regionRepository, IMapper mapper)
         {
            this.databaseContext = databaseContext;
             this.regionRepository = regionRepository;
+            this.mapper = mapper;
         }
 
         [HttpGet]
@@ -27,18 +30,8 @@ namespace Walk_and_Trails_of_SA_API.Controllers
             //Get Data from database-Domain models
             var regionsDomain = await regionRepository.GetAllAysnc();
 
-            //Map Domain models to DTOs
-            var regionDto = new List<RegionDto>();
-            foreach (var regionDomain in regionsDomain)
-            {
-                regionDto.Add(new RegionDto()
-                {
-                    Id =regionDomain.Id,
-                    Name = regionDomain.Name,
-                    Code = regionDomain.Code,
-                    RegionImageUrl = regionDomain.RegionImageUrl
-                });
-            }
+            //Map Domain Models to DTOs
+           var regionDto= mapper.Map<List<RegionDto>>(regionsDomain);
 
             //Return  DTos.
             return StatusCode(StatusCodes.Status200OK, regionDto);
@@ -51,19 +44,14 @@ namespace Walk_and_Trails_of_SA_API.Controllers
             // Get Region Domain model from the database
             var regionDomain =await  regionRepository.GetAysncById(id);
 
+            //checking if it's null
             if (regionDomain == null)
             {
                 return NotFound();
             }
 
-            // Convert Region domain to a single RegionDto object
-            var regionDto = new RegionDto()
-            {
-                Id = regionDomain.Id,
-                Name = regionDomain.Name,
-                Code = regionDomain.Code,
-                RegionImageUrl = regionDomain.RegionImageUrl
-            };
+            //Map Domain Models to DTOs
+            var regionDto = mapper.Map<RegionDto>(regionDomain);
 
             // Return DTO back to the client
             return StatusCode(StatusCodes.Status200OK, regionDto);
@@ -74,29 +62,15 @@ namespace Walk_and_Trails_of_SA_API.Controllers
         public async Task <IActionResult>  Create ([FromBody] AddRegionRequestDto addRegionRequestDto)
         {
             //Convert DTO TO Domain Model
-            var regionDomain = new Region
-            {
-                Code = addRegionRequestDto.Code,
-                Name = addRegionRequestDto.Name,
-                RegionImageUrl = addRegionRequestDto.RegionImageUrl
-            };
+            var regionDomain = mapper.Map<Region>(addRegionRequestDto);
 
             //Use Domain Model to create Region
            regionDomain= await regionRepository.CreateAsync(regionDomain);
             await databaseContext.SaveChangesAsync();
 
-
-            //return CreatedAtAction(nameof(GetById), new {id=regionDomain.Id}, regionDomain);
-
             //Map Domain model back to DTO
 
-            var regionDto = new RegionDto
-            {
-                Id = regionDomain.Id,
-                Code = regionDomain.Code,
-                Name = regionDomain.Name,
-                RegionImageUrl = regionDomain.RegionImageUrl
-            };
+            var regionDto =mapper.Map<RegionDto>(regionDomain);
 
             return StatusCode(StatusCodes.Status201Created, regionDomain);
 
@@ -110,12 +84,7 @@ namespace Walk_and_Trails_of_SA_API.Controllers
 
             //Map to DTO to domain Model
 
-            var regionDomain = new Region
-            {
-                Code = updateRegionRequestDto.Code,
-                Name = updateRegionRequestDto.Name,
-                RegionImageUrl = updateRegionRequestDto.RegionImageUrl
-            };
+            var regionDomain = mapper.Map<Region>(updateRegionRequestDto);
             //check if Region Exists
             regionDomain =await regionRepository.UpdateAsync(id, regionDomain);
 
@@ -124,13 +93,7 @@ namespace Walk_and_Trails_of_SA_API.Controllers
                 return NotFound();
             }
             //convert domain model to DTO
-            var regionDto = new RegionDto
-            {
-                Id = regionDomain.Id,
-                Code = regionDomain.Code,
-                Name = regionDomain.Name,
-                RegionImageUrl = regionDomain.RegionImageUrl
-            };
+            var regionDto = mapper.Map<RegionDto> (regionDomain);
 
 
             return StatusCode(StatusCodes.Status200OK,regionDto);
@@ -148,16 +111,9 @@ namespace Walk_and_Trails_of_SA_API.Controllers
                 return NotFound();
             }
 
-            //Return Deleted  Region back
             //Map  Domain Model to Dto
 
-            var regionsDto = new RegionDto
-            {
-                Id = regionDomain.Id,
-                Code = regionDomain.Code,
-                Name = regionDomain.Name,
-                RegionImageUrl = regionDomain.RegionImageUrl
-            };
+            var regionsDto = mapper.Map<RegionDto> (regionDomain);
 
             return StatusCode(StatusCodes.Status200OK, regionsDto);
         }
