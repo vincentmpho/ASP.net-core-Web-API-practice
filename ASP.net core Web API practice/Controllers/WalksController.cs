@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Walk_and_Trails_of_SA_API.CustomActionFilters;
 using Walk_and_Trails_of_SA_API.Models.Domain;
 using Walk_and_Trails_of_SA_API.Models.DTO;
 using Walk_and_Trails_of_SA_API.Repositories;
@@ -64,11 +65,9 @@ namespace Walk_and_Trails_of_SA_API.Controllers
         //CRREATE Walk
         //POST: /api/walks
         [HttpPost]
+        [ValidateModel]
         public async Task<IActionResult> Create([FromBody] AddWalkRequestDto addWalkRequestDto)
         {
-
-            if (ModelState.IsValid)
-            {
                 //Map  DTO to Domain Model
                 var walkDomainModel = mapper.Map<Walk>(addWalkRequestDto);
 
@@ -80,11 +79,6 @@ namespace Walk_and_Trails_of_SA_API.Controllers
 
 
                 return StatusCode(StatusCodes.Status200OK, walkDomainModel);
-            }
-            else 
-            {
-                return StatusCode(StatusCodes.Status400BadRequest, ModelState);
-            }
         }
 
         //UPDATE Walk By ID
@@ -92,12 +86,10 @@ namespace Walk_and_Trails_of_SA_API.Controllers
 
         [HttpPut]
         [Route("{id:Guid}")]
+        [ValidateModel]
 
         public async Task<IActionResult>Update([FromRoute]Guid id, UpdateWalkRequestDto updateWalkRequestDto)
         {
-
-            if (!ModelState.IsValid)
-            {
                 //Map DTO to Domain Model
                 var walkDomainModel = mapper.Map<Walk>(updateWalkRequestDto);
 
@@ -114,13 +106,6 @@ namespace Walk_and_Trails_of_SA_API.Controllers
                 mapper.Map<WalkDto>(walkDomainModel);
 
                 return StatusCode(StatusCodes.Status200OK, walkDomainModel);
-            }
-            else 
-            {
-                return StatusCode(StatusCodes.Status400BadRequest, ModelState);
-            }
-            
-
         }
 
         //DELETE a walk By ID

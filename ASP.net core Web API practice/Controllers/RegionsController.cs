@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Walk_and_Trails_of_SA_API.CustomActionFilters;
 using Walk_and_Trails_of_SA_API.Data;
 using Walk_and_Trails_of_SA_API.Models.Domain;
 using Walk_and_Trails_of_SA_API.Models.DTO;
@@ -59,12 +60,9 @@ namespace Walk_and_Trails_of_SA_API.Controllers
 
         //POST to create new Region
         [HttpPost]
+        [ValidateModel]
         public async Task <IActionResult>  Create ([FromBody] AddRegionRequestDto addRegionRequestDto)
         {
-            if (ModelState.IsValid)
-            {
-
-
                 //Convert DTO TO Domain Model
                 var regionDomain = mapper.Map<Region>(addRegionRequestDto);
 
@@ -77,21 +75,16 @@ namespace Walk_and_Trails_of_SA_API.Controllers
                 var regionDto = mapper.Map<RegionDto>(regionDomain);
 
                 return StatusCode(StatusCodes.Status201Created, regionDomain);
-            }
-            else
-            {
-                return StatusCode(StatusCodes.Status400BadRequest, ModelState);
-            }
-
+         
         }
 
         // Update Region
         [HttpPut]
         [Route("{id}")]
+        [ValidateModel]
         public async Task <IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateRegionRequestDto updateRegionRequestDto)
         {
-            if (ModelState.IsValid)
-            {
+
                 //Map to DTO to domain Model
                 var regionDomain = mapper.Map<Region>(updateRegionRequestDto);
 
@@ -106,14 +99,7 @@ namespace Walk_and_Trails_of_SA_API.Controllers
                 var regionDto = mapper.Map<RegionDto>(regionDomain);
 
 
-                return StatusCode(StatusCodes.Status200OK, regionDto);
-            }
-            else
-            {
-                return StatusCode(StatusCodes.Status400BadRequest, ModelState);
-            }
-
-            
+                return StatusCode(StatusCodes.Status200OK, regionDto);   
         }
 
         // Delete Region
