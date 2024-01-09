@@ -66,17 +66,25 @@ namespace Walk_and_Trails_of_SA_API.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] AddWalkRequestDto addWalkRequestDto)
         {
-            //Map  DTO to Domain Model
-            var walkDomainModel =mapper.Map<Walk>(addWalkRequestDto);
 
-            await WalkRepository.CreateAsync(walkDomainModel);
+            if (ModelState.IsValid)
+            {
+                //Map  DTO to Domain Model
+                var walkDomainModel = mapper.Map<Walk>(addWalkRequestDto);
+
+                await WalkRepository.CreateAsync(walkDomainModel);
 
 
-            //Map Domain model to Dto
-            mapper.Map<WalkDto>(walkDomainModel);
+                //Map Domain model to Dto
+                mapper.Map<WalkDto>(walkDomainModel);
 
 
-            return StatusCode(StatusCodes.Status200OK, walkDomainModel);
+                return StatusCode(StatusCodes.Status200OK, walkDomainModel);
+            }
+            else 
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, ModelState);
+            }
         }
 
         //UPDATE Walk By ID
@@ -87,24 +95,31 @@ namespace Walk_and_Trails_of_SA_API.Controllers
 
         public async Task<IActionResult>Update([FromRoute]Guid id, UpdateWalkRequestDto updateWalkRequestDto)
         {
-            //Map DTO to Domain Model
 
-            var walkDomainModel = mapper.Map<Walk>(updateWalkRequestDto);
-
-            //use Repo
-
-           walkDomainModel= await WalkRepository.UpdateByIdAsync(id, walkDomainModel);
-
-            //check
-
-            if (walkDomainModel == null)
+            if (!ModelState.IsValid)
             {
-                return NotFound();
+                //Map DTO to Domain Model
+                var walkDomainModel = mapper.Map<Walk>(updateWalkRequestDto);
+
+                //use Repo
+                walkDomainModel = await WalkRepository.UpdateByIdAsync(id, walkDomainModel);
+
+                //check
+
+                if (walkDomainModel == null)
+                {
+                    return NotFound();
+                }
+
+                mapper.Map<WalkDto>(walkDomainModel);
+
+                return StatusCode(StatusCodes.Status200OK, walkDomainModel);
             }
-
-            mapper.Map<WalkDto>(walkDomainModel) ;
-
-            return StatusCode(StatusCodes.Status200OK, walkDomainModel);
+            else 
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, ModelState);
+            }
+            
 
         }
 
