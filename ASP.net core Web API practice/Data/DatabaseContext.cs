@@ -5,7 +5,7 @@ namespace Walk_and_Trails_of_SA_API.Data
 {
     public class DatabaseContext : DbContext
     {
-        public DatabaseContext(DbContextOptions<DatabaseContext> options) : base(options)
+        public DatabaseContext(DbContextOptions<DatabaseContext> dbContextOptions) : base(dbContextOptions)
         {
         }
         public DbSet<Difficulty> Difficulties { get; set; }
