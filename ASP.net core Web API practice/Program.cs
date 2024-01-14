@@ -18,7 +18,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(Options =>
 {
-    Options.SwaggerDoc("V1", new OpenApiInfo { Title = "Walk and Trails of SA API", Version = "v1" });
+    Options.SwaggerDoc("v1", new OpenApiInfo { Title = "Walk and Trails of SA API", Version = "v1" });
     Options.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
     {
         Name = "Authorization",
