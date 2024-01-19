@@ -30,12 +30,20 @@ namespace Walk_and_Trails_of_SA_API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-             var walkDomainModel =await WalkRepository.GetALLAsync();
+            try
+            {
+                var walkDomainModel = await WalkRepository.GetALLAsync();
 
-            //map Domain Model to Dto
-            mapper.Map<List<WalkDto>>(walkDomainModel);
+                //map Domain Model to Dto
+                mapper.Map<List<WalkDto>>(walkDomainModel);
 
-            return StatusCode(StatusCodes.Status200OK, walkDomainModel);
+                return StatusCode(StatusCodes.Status200OK, walkDomainModel);
+            }
+            catch (Exception ex)
+            {
+                //log this exception
+                throw;
+            }
         }
 
         //GET Walks
