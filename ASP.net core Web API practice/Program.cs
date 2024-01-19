@@ -9,10 +9,17 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Microsoft.Extensions.FileProviders;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+var logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .WriteTo.File("Logs/SAWalks_Log.txt", rollingInterval:RollingInterval.Minute)
+    .MinimumLevel.Warning()
+    .CreateLogger();
 
 builder.Services.AddControllers();
 builder.Services.AddHttpContextAccessor();
